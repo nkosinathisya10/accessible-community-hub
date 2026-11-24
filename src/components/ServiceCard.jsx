@@ -1,3 +1,5 @@
+import { branchPhones } from "../data/services.js";
+
 // One service in the list. The button says which service it is for, so a
 // screen reader user who jumps from button to button knows what each one does.
 
@@ -14,7 +16,11 @@ function ServiceCard({ service, onBook }) {
         <dt>Nurse on duty</dt>
         <dd>{service.nurse}</dd>
         <dt>Next free time</dt>
-        <dd>{service.nextFree}</dd>
+        <dd>
+          {service.nextFreeDay} {service.nextFreeTime}
+        </dd>
+        <dt>Branch phone</dt>
+        <dd>{branchPhones[service.branch]}</dd>
       </dl>
       <button type="button" onClick={() => onBook(service)}>
         Book {service.name}

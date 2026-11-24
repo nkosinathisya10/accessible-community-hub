@@ -1,11 +1,15 @@
 import { useEffect, useRef } from "react";
+import { showDate } from "../utils/checkForm.js";
 
 // The popup that shows after a booking is done.
 // What I had to think about:
 //  - when it opens, focus must move INTO it (to the heading)
 //  - Tab must stay inside it while it is open
 //  - Escape must close it
-//  - when it closes, focus must go back to where the person was
+//  - when it closes, focus must go back to where the person was, but only if
+//    that place is still on the page. "Find another service" changes the page,
+//    so the "Book my visit" button is gone. Then App moves focus to the heading
+//    of the services page instead.
 
 function ConfirmModal({ booking, onClose, onFindMore }) {
   const dialogRef = useRef(null);
@@ -18,9 +22,10 @@ function ConfirmModal({ booking, onClose, onFindMore }) {
     // move focus into the popup
     headingRef.current.focus();
 
-    // when the popup is removed, put focus back
+    // when the popup is removed, put focus back, but only if the old place
+    // is still on the page (isConnected is false once React has removed it)
     return () => {
-      if (oldFocus && oldFocus.focus) {
+      if (oldFocus && oldFocus.isConnected && oldFocus.focus) {
         oldFocus.focus();
       }
     };
@@ -68,8 +73,12 @@ function ConfirmModal({ booking, onClose, onFindMore }) {
           <dd>{booking.serviceName}</dd>
           <dt>Branch</dt>
           <dd>{booking.branch}</dd>
+          <dt>Nurse on duty</dt>
+          <dd>{booking.nurse}</dd>
           <dt>Date</dt>
-          <dd>{booking.visitDate}</dd>
+          <dd>{showDate(booking.visitDate)}</dd>
+          <dt>Time</dt>
+          <dd>{booking.visitTime}</dd>
           <dt>Name</dt>
           <dd>{booking.fullName}</dd>
           <dt>Cell number</dt>

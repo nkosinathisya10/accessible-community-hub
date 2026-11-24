@@ -80,6 +80,20 @@
               <span class="help-text" id="date-help">Pick a weekday. The clinic is closed on Sundays.</span>
             </p>
 
+            <!-- the times come from the service the person picked.
+                 radio buttons, so the browser does the arrow keys -->
+            <fieldset aria-describedby="time-help">
+              <legend>Time you would like to come *</legend>
+              <span class="help-text" id="time-help">These are the times for the service you chose.</span>
+              <div class="time-options">
+                <label class="time-option"><input type="radio" name="visitTime" value="08:00" required> 08:00</label>
+                <label class="time-option"><input type="radio" name="visitTime" value="08:30"> 08:30</label>
+                <label class="time-option"><input type="radio" name="visitTime" value="09:00"> 09:00</label>
+                <label class="time-option"><input type="radio" name="visitTime" value="11:00"> 11:00</label>
+                <label class="time-option"><input type="radio" name="visitTime" value="14:00"> 14:00</label>
+              </div>
+            </fieldset>
+
             <p>
               <label for="reason">Reason for the visit (optional)</label>
               <textarea id="reason" name="reason" rows="4" aria-describedby="reason-help"></textarea>

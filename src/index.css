@@ -1,6 +1,20 @@
 /* index.css - the styles for the whole React app.
-   The colours are the same ones I used in the wireframes (see wireframes/main.css
-   for the contrast numbers). Every text colour is at least 4.5:1 on its background. */
+   The colours are the same ones I used in the wireframes. The full contrast
+   audit is at the top of wireframes/main.css. Every text colour is at least 4.5:1
+   on the background it really sits on, and every focus ring and border is at
+   least 3:1.
+
+   Extra pairs that only the React app has (worked out with the WCAG formula):
+   - pressed filter button  #FFFFFF on #1B4F8A = 8.29:1  (passes)
+   - accordion button text  #1F2933 on #FFFFFF = 14.76:1 (passes)
+   - accordion hover text   #1F2933 on #E8EEF5 = 12.63:1 (passes)
+   - plain button hover     #123A66 on #E8EEF5 = 9.86:1  (passes)
+   - form summary error     #9B1C1C on #F9F7F3 = 7.62:1  (passes, it sits on the page, not a card)
+   - error border on a field #9B1C1C on #FFFFFF = 8.15:1 (passes the 3:1 rule)
+   - emergency box text     #7F1D1D on #FDECEC = 8.77:1  (passes)
+   - emergency box border   #9B1C1C on #FDECEC = 7.14:1  (passes the 3:1 rule)
+   - popup text             #1F2933 on #FFFFFF = 14.76:1 (passes)
+   - focus ring in the popup #2B6CB0 on #FFFFFF = 5.42:1 (passes the 3:1 rule) */
 
 :root {
   --page-colour: #F9F7F3;
@@ -53,6 +67,12 @@ footer :focus-visible {
 
 .skip-link:focus {
   top: 0.5rem;
+}
+
+/* the skip link shows on top of the green header, and the blue ring is only
+   1.68:1 on that green (fails), so the skip link gets the yellow ring (6.46:1) */
+.skip-link:focus-visible {
+  outline-color: #FFD54F;
 }
 
 /* ---------- header and menu ---------- */
@@ -254,9 +274,51 @@ fieldset {
   margin-bottom: 0;
 }
 
-input[type="checkbox"] {
+input[type="checkbox"],
+input[type="radio"] {
   width: 1.5rem;
   height: 1.5rem;
+}
+
+/* the radio buttons for "How urgent is it?" sit one under the other */
+.radio-label {
+  margin-bottom: 0.5rem;
+}
+
+/* ---------- time choice ---------- */
+/* each time is a radio button inside a box, so it is a big target to click */
+.time-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.time-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: normal;
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  background-color: #FFFFFF;
+  border: 2px solid var(--border-colour);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* the chosen time is bold with a thicker border, so it is not only a colour change */
+.time-option:has(input:checked) {
+  font-weight: bold;
+  border-color: var(--link-colour);
+  border-width: 4px;
+  padding: 0.375rem 0.625rem;
+}
+
+/* the whole group gets the red border when the time is missing */
+.invalid-group {
+  border-color: #9B1C1C;
+  border-width: 4px;
 }
 
 input[type="text"],
@@ -301,6 +363,24 @@ textarea {
 }
 
 .result-count {
+  font-weight: bold;
+}
+
+/* ---------- urgency messages ---------- */
+.emergency-box {
+  background-color: #FDECEC;
+  color: #7F1D1D;
+  border: 4px solid #9B1C1C;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.emergency-box h3 {
+  margin-top: 0;
+}
+
+.today-note {
   font-weight: bold;
 }
 

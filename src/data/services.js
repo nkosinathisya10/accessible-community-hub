@@ -1,5 +1,5 @@
 // The clinic services I am using for the portal. This is made-up data for the project.
-// The nurse names and times are not real.
+// The nurse names, times and phone numbers are not real.
 
 export const categories = [
   { id: "checkup", name: "General check-ups" },
@@ -10,6 +10,25 @@ export const categories = [
 
 export const branches = ["Scottsville", "Edendale", "Imbali"];
 
+// the phone number of each branch (the same ones as on the home page)
+export const branchPhones = {
+  Scottsville: "033 000 0000",
+  Edendale: "033 000 0001",
+  Imbali: "033 000 0002",
+};
+
+// The urgency choices from my services wireframe.
+// Only "routine" lets you book online. The other two tell you what to do instead.
+export const urgencyChoices = [
+  { id: "routine", label: "Not urgent, I can book a visit" },
+  { id: "today", label: "I need to be seen today, I will phone the branch" },
+  { id: "emergency", label: "Emergency, I will call 10177 or 112" },
+];
+
+// Each service has:
+//  - times: the times the nurse sees people for this service (any open day)
+//  - nextFreeDay and nextFreeTime: the next free time, shown on the service card
+//  - sameDay: true if the branch can fit you in today when you phone first
 export const services = [
   {
     id: 1,
@@ -17,7 +36,10 @@ export const services = [
     category: "checkup",
     branch: "Imbali",
     nurse: "Sister Zulu",
-    nextFree: "Monday 08:30",
+    nextFreeDay: "Monday",
+    nextFreeTime: "08:30",
+    times: ["08:30", "09:30", "10:30", "13:00", "14:30"],
+    sameDay: true,
     description: "A general visit to talk to a nurse about how you are feeling.",
   },
   {
@@ -26,7 +48,10 @@ export const services = [
     category: "checkup",
     branch: "Scottsville",
     nurse: "Sister Ngcobo",
-    nextFree: "Tuesday 10:00",
+    nextFreeDay: "Tuesday",
+    nextFreeTime: "10:00",
+    times: ["08:00", "10:00", "11:00", "14:00"],
+    sameDay: false,
     description: "Weight, blood pressure and a chat about staying healthy.",
   },
   {
@@ -35,7 +60,10 @@ export const services = [
     category: "child",
     branch: "Edendale",
     nurse: "Sister Dlamini",
-    nextFree: "Monday 09:15",
+    nextFreeDay: "Monday",
+    nextFreeTime: "09:15",
+    times: ["08:00", "09:15", "10:30", "11:45"],
+    sameDay: true,
     description: "Weighing, growth checks and advice for new mothers.",
   },
   {
@@ -44,7 +72,10 @@ export const services = [
     category: "child",
     branch: "Scottsville",
     nurse: "Sister Cele",
-    nextFree: "Wednesday 11:30",
+    nextFreeDay: "Wednesday",
+    nextFreeTime: "11:30",
+    times: ["09:00", "11:30", "13:30", "15:00"],
+    sameDay: false,
     description: "A check-up for children from one to twelve years old.",
   },
   {
@@ -53,7 +84,10 @@ export const services = [
     category: "chronic",
     branch: "Scottsville",
     nurse: "Sister Khumalo",
-    nextFree: "Monday 08:00",
+    nextFreeDay: "Monday",
+    nextFreeTime: "08:00",
+    times: ["08:00", "08:30", "09:00", "11:00", "14:00"],
+    sameDay: true,
     description: "A nurse checks your blood pressure and talks to you about the results.",
   },
   {
@@ -62,7 +96,10 @@ export const services = [
     category: "chronic",
     branch: "Edendale",
     nurse: "Sister Mthembu",
-    nextFree: "Thursday 08:45",
+    nextFreeDay: "Thursday",
+    nextFreeTime: "08:45",
+    times: ["07:45", "08:45", "10:00", "13:15"],
+    sameDay: true,
     description: "A finger-prick test for sugar, with advice on food and medicine.",
   },
   {
@@ -71,7 +108,10 @@ export const services = [
     category: "vaccine",
     branch: "Scottsville",
     nurse: "Sister Zondi",
-    nextFree: "Friday 09:00",
+    nextFreeDay: "Friday",
+    nextFreeTime: "09:00",
+    times: ["09:00", "09:30", "10:00", "12:00", "15:00"],
+    sameDay: false,
     description: "A quick flu injection before winter.",
   },
   {
@@ -80,7 +120,10 @@ export const services = [
     category: "vaccine",
     branch: "Imbali",
     nurse: "Sister Shange",
-    nextFree: "Tuesday 13:00",
+    nextFreeDay: "Tuesday",
+    nextFreeTime: "13:00",
+    times: ["08:30", "10:00", "13:00", "14:30"],
+    sameDay: false,
     description: "Baby and child injections, as on the Road to Health card.",
   },
 ];

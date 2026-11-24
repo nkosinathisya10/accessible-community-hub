@@ -1,9 +1,11 @@
 import { useState } from "react";
 import ServiceCard from "./ServiceCard.jsx";
-import { services, categories, branches } from "../data/services.js";
+import { services, categories, branches, urgencyChoices } from "../data/services.js";
 
-// The "Find a service" page: a search box, a filter section that opens and
-// closes, and the list of services.
+// The "Find a service" page: a search box, the "How urgent is it?" choice,
+// a filter section that opens and closes, and the list of services.
+// I did not hide the urgency choice inside the Filters panel, because a person
+// with an emergency must not have to open a panel to find out what to do.
 // The ARIA bits I have to keep up to date as the person clicks:
 //  - the "Filters" button has aria-expanded (true when the panel is open)
 //  - each type button has aria-pressed (true when it is switched on)
@@ -13,6 +15,7 @@ function ServicesPage({ headingRef, onBook }) {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [chosenTypes, setChosenTypes] = useState([]);
   const [chosenBranch, setChosenBranch] = useState("");
+  const [urgency, setUrgency] = useState("routine");
 
   // switch a type on if it is off, and off if it is on
   function toggleType(typeId) {
@@ -27,6 +30,7 @@ function ServicesPage({ headingRef, onBook }) {
     setSearchText("");
     setChosenTypes([]);
     setChosenBranch("");
+    setUrgency("routine");
   }
 
   // work out which services to show
@@ -36,11 +40,22 @@ function ServicesPage({ headingRef, onBook }) {
       service.description.toLowerCase().includes(searchText.toLowerCase());
     const matchesType = chosenTypes.length === 0 || chosenTypes.includes(service.category);
     const matchesBranch = chosenBranch === "" || service.branch === chosenBranch;
-    return matchesSearch && matchesType && matchesBranch;
+    // "seen today" only shows the services that can fit someone in today
+    const matchesUrgency = urgency !== "today" || service.sameDay;
+    return matchesSearch && matchesType && matchesBranch && matchesUrgency;
   });
 
+  const isEmergency = urgency === "emergency";
   const howMany = shownServices.length;
-  const countText = howMany + (howMany === 1 ? " service found" : " services found");
+
+  // the words in the status line, which a screen reader reads out when they change
+  let countText = howMany + (howMany === 1 ? " service found" : " services found");
+  if (urgency === "today") {
+    countText = countText + " that can see you today";
+  }
+  if (isEmergency) {
+    countText = "Emergency chosen. Do not book online. Call 10177 or 112.";
+  }
 
   return (
     <div>
@@ -67,6 +82,24 @@ function ServicesPage({ headingRef, onBook }) {
             </span>
           </div>
         </form>
+
+        {/* real radio buttons, so the browser handles the arrow keys and
+            the screen reader says "1 of 3", "checked" and so on */}
+        <fieldset>
+          <legend>How urgent is it?</legend>
+          {urgencyChoices.map((choice) => (
+            <label key={choice.id} className="checkbox-label radio-label">
+              <input
+                type="radio"
+                name="urgency"
+                value={choice.id}
+                checked={urgency === choice.id}
+                onChange={(e) => setUrgency(e.target.value)}
+              />
+              {choice.label}
+            </label>
+          ))}
+        </fieldset>
 
         <h3 className="accordion-heading">
           <button
@@ -130,15 +163,36 @@ function ServicesPage({ headingRef, onBook }) {
           {countText}
         </p>
 
-        {howMany === 0 && <p>No services match. Try clearing the search and filters.</p>}
+        {isEmergency && (
+          <div className="emergency-box">
+            <h3>This is an emergency</h3>
+            <p>Please do not book online and do not wait for a clinic time.</p>
+            <ul>
+              <li>Call 10177 for an ambulance.</li>
+              <li>Call 112 from any cell phone.</li>
+              <li>Or go to your nearest hospital now.</li>
+            </ul>
+          </div>
+        )}
 
-        <ul className="service-list">
-          {shownServices.map((service) => (
-            <li key={service.id}>
-              <ServiceCard service={service} onBook={onBook} />
-            </li>
-          ))}
-        </ul>
+        {!isEmergency && urgency === "today" && (
+          <p className="today-note">
+            These services can fit you in today. Please phone the branch first, then go in.
+            The phone number is on each service.
+          </p>
+        )}
+
+        {!isEmergency && howMany === 0 && <p>No services match. Try clearing the search and filters.</p>}
+
+        {!isEmergency && (
+          <ul className="service-list">
+            {shownServices.map((service) => (
+              <li key={service.id}>
+                <ServiceCard service={service} onBook={onBook} />
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </div>
   );

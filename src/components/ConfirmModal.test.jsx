@@ -1,4 +1,4 @@
-import { describe, test, expect } from "vitest";
+import { describe, test, expect, vi } from "vitest";
 import { useState } from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -8,7 +8,9 @@ import ConfirmModal from "./ConfirmModal.jsx";
 const fakeBooking = {
   serviceName: "Blood pressure check",
   branch: "Scottsville",
+  nurse: "Sister Khumalo",
   visitDate: "2026-10-19",
+  visitTime: "08:30",
   fullName: "Thandeka Mkhize",
   cellNumber: "0821234567",
 };
@@ -26,7 +28,59 @@ function TestPage() {
   );
 }
 
+// a page where "Find another service" removes the button that opened the popup,
+// the same as the real app does when it changes to the services page
+function PageThatChanges() {
+  const [open, setOpen] = useState(false);
+  const [page, setPage] = useState("book");
+  return (
+    <div>
+      {page === "book" && <button onClick={() => setOpen(true)}>Book my visit</button>}
+      {page === "services" && <h1>Find a clinic service</h1>}
+      {open && (
+        <ConfirmModal
+          booking={fakeBooking}
+          onClose={() => setOpen(false)}
+          onFindMore={() => {
+            setOpen(false);
+            setPage("services");
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
 describe("ConfirmModal", () => {
+  test("it shows the service, branch, nurse, date and the chosen time", async () => {
+    const user = userEvent.setup();
+    render(<TestPage />);
+    await user.click(screen.getByRole("button", { name: /open popup/i }));
+
+    const dialog = screen.getByRole("dialog");
+    expect(dialog).toHaveTextContent("Blood pressure check");
+    expect(dialog).toHaveTextContent("Scottsville");
+    expect(dialog).toHaveTextContent("Sister Khumalo");
+    // the date is written out in words, not 2026-10-19
+    expect(dialog).toHaveTextContent("Monday 19 October 2026");
+    expect(dialog).toHaveTextContent("08:30");
+  });
+
+  test("it does not try to give focus back to a button that has been removed", async () => {
+    const user = userEvent.setup();
+    render(<PageThatChanges />);
+
+    const bookButton = screen.getByRole("button", { name: /book my visit/i });
+    await user.click(bookButton);
+    const focusSpy = vi.spyOn(bookButton, "focus");
+
+    await user.click(screen.getByRole("button", { name: /find another service/i }));
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(bookButton.isConnected).toBe(false);
+    expect(focusSpy).not.toHaveBeenCalled();
+  });
+
   test("focus moves into the popup when it opens", async () => {
     const user = userEvent.setup();
     render(<TestPage />);

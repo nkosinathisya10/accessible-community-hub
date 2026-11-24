@@ -48,6 +48,10 @@ function App() {
     setCurrentPage("book");
   }
 
+  // "Find another service" in the popup. The popup closes and the page changes.
+  // The booking page (and its "Book my visit" button) is removed, so the popup
+  // can not give focus back to it. The useEffect above moves focus to the
+  // "Find a clinic service" heading instead, because the page changed.
   function findMoreServices() {
     setBooking(null);
     setCurrentPage("services");

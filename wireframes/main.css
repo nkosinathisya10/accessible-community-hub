@@ -2,19 +2,49 @@
    I kept it simple on purpose. These are wireframes, so the focus is on structure,
    colour contrast and keyboard focus, not on making it look fancy.
 
-   CONTRAST NUMBERS (I checked each pair with a contrast checker, WCAG 2.1 AA needs
-   4.5:1 for normal text and 3:1 for large text and for borders/focus rings):
-   - body text   #1F2933 on #F9F7F3  = 13.79:1  (passes)
-   - muted text  #4A5560 on #F9F7F3  = 7.11:1   (passes)
-   - header text #FFFFFF on #14532D  = 9.11:1   (passes)
-   - links       #1B4F8A on #F9F7F3  = 7.75:1   (passes)
-   - button text #FFFFFF on #1B4F8A  = 8.29:1   (passes)
-   - error text  #9B1C1C on #FFFFFF  = 8.15:1   (passes)
-   - notice text #3D2F00 on #FFF4CE  = 11.89:1  (passes)
-   - footer text #FFFFFF on #1F2933  = 14.76:1  (passes)
-   - input border #5B6670 on #FFFFFF = 5.87:1   (passes the 3:1 rule for borders)
-   - focus ring  #2B6CB0 on #F9F7F3  = 5.07:1   (passes the 3:1 rule)
-   - focus ring on the green header  #FFD54F on #14532D = 6.46:1 (passes) */
+   CONTRAST AUDIT
+   WCAG 2.1 AA needs 4.5:1 for normal text, 3:1 for large text, and 3:1 for
+   borders and focus rings (1.4.11). I worked out every ratio with the WCAG
+   formula and checked them again in a contrast checker. I checked each colour
+   against every background it really sits on, not only the page background.
+   The React app (src/index.css) uses the same colours.
+
+   1. Text on the page background (#F9F7F3)
+   - body text   #1F2933 on #F9F7F3 = 13.79:1 (passes)
+   - muted text  #4A5560 on #F9F7F3 = 7.11:1  (passes) - help text under fields
+   - links       #1B4F8A on #F9F7F3 = 7.75:1  (passes)
+   - error text  #9B1C1C on #F9F7F3 = 7.62:1  (passes) - errors under fields sit on the page
+
+   2. Text on the white cards, inputs and popup (#FFFFFF)
+   - body text   #1F2933 on #FFFFFF = 14.76:1 (passes) - card text, typed text in inputs
+   - muted text  #4A5560 on #FFFFFF = 7.61:1  (passes)
+   - links       #1B4F8A on #FFFFFF = 8.29:1  (passes) - card links, skip link, plain buttons
+   - error text  #9B1C1C on #FFFFFF = 8.15:1  (passes)
+
+   3. Text on the other backgrounds
+   - header text #FFFFFF on #14532D = 9.11:1  (passes)
+   - footer text #FFFFFF on #1F2933 = 14.76:1 (passes)
+   - button text #FFFFFF on #1B4F8A = 8.29:1  (passes)
+   - button hover #FFFFFF on #123A66 = 11.52:1 (passes)
+   - notice text #3D2F00 on #FFF4CE = 11.89:1 (passes)
+   - notice link #123A66 on #FFF4CE = 10.47:1 (passes)
+
+   4. Borders (need 3:1)
+   - input and card border #5B6670 on #FFFFFF = 5.87:1 (passes)
+   - input and card border #5B6670 on #F9F7F3 = 5.48:1 (passes)
+   - error border          #9B1C1C on #FFFFFF = 8.15:1 (passes)
+
+   5. Focus rings (need 3:1 against the colour next to the ring)
+   The ring has a 2px gap (outline-offset), so the ring sits on the background
+   around the control, not on the control itself.
+   - blue ring   #2B6CB0 on the page #F9F7F3      = 5.07:1  (passes)
+   - blue ring   #2B6CB0 on white cards #FFFFFF    = 5.42:1  (passes) - links and buttons inside cards
+   - blue ring   #2B6CB0 on the notice #FFF4CE     = 4.93:1  (passes) - a link inside the yellow notice
+   - yellow ring #FFD54F on the green header #14532D = 6.46:1 (passes)
+   - yellow ring #FFD54F on the dark footer #1F2933  = 10.46:1 (passes)
+   - skip link: it shows on top of the green header. The blue ring there is only
+     #2B6CB0 on #14532D = 1.68:1, which FAILS, so the skip link gets the yellow
+     ring instead (6.46:1, passes). I found this when I did this audit. */
 
 :root {
   --page-colour: #F9F7F3;
@@ -68,6 +98,11 @@ header :focus-visible {
 
 .skip-link:focus {
   top: 0.5rem;
+}
+
+/* the blue ring fails on the green header (1.68:1), so the skip link gets yellow */
+.skip-link:focus-visible {
+  outline-color: #FFD54F;
 }
 
 /* ---------- header and nav ---------- */
@@ -211,6 +246,21 @@ input[type="checkbox"],
 input[type="radio"] {
   width: 1.5rem;
   height: 1.5rem;
+}
+
+/* the times on the booking page sit next to each other in boxes */
+.time-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+fieldset .time-option {
+  padding: 0.5rem 0.75rem;
+  background-color: #FFFFFF;
+  border: 2px solid var(--border-colour);
+  border-radius: 6px;
+  margin-bottom: 0;
 }
 
 input[type="text"],
